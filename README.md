@@ -1,9 +1,9 @@
 # Bảng Hắt Sáng (Light Table) ᓚᘏᗢ
 
-# Example
+## Example
 ![image](https://github.com/user-attachments/assets/5f2798d2-1d1d-440e-a0b0-95d6bb35a3d3)
 
-
+## Introduction
 <!-- Vietnamese -->
 <details>
   <summary>🇻🇳 Tiếng Việt</summary>
