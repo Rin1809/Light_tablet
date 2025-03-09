@@ -29,6 +29,7 @@
     *   `Ctrl + O`: Mở/Đóng bảng vẽ.
     *   `Ctrl + Q`: Bật/Tắt chế độ Click-through.
     *   `Ctrl + E`: Bật/Tắt chế độ Ghim cửa sổ.
+    *   `Ctrl + F`: Ẩn/Hiển hình ảnh.
 * Kéo thả ảnh để di chuyển.
 
 ## Cài đặt
@@ -143,6 +144,7 @@
     *   `Ctrl + O`: Open/Close the light table.
     *   `Ctrl + Q`: Toggle Click-through mode.
     *   `Ctrl + E`: Toggle Always on Top mode.
+    *   `Ctrl + F`: Show/Hide Image.
 * Drag and drop images to move them.
 
 ## Installation
@@ -256,6 +258,7 @@
     *   `Ctrl + O`: ライトテーブルを開く/閉じる。
     *   `Ctrl + Q`: クリックスルーモードの切り替え。
     *   `Ctrl + E`: 常に最前面モードの切り替え。
+    *   `Ctrl + F`: イメージを非表示/表示.
 * 画像をドラッグ＆ドロップして移動。
 
 ## インストール
