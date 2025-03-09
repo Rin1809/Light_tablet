@@ -16,6 +16,7 @@ class ImageObject:
         self.cached_image = None
         self.cached_size = None
         self.cached_angle = None
+        self.is_visible = True 
 
     def get_transformed_image(self, window_width, window_height):
         img_width, img_height = self.photo.size

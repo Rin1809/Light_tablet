@@ -6,7 +6,7 @@ import os
 import pickle
 import keyboard
 from image_object import ImageObject
-from ui import LightTableUI  
+from ui import LightTableUI
 from PIL import ImageTk, Image
 
 
@@ -15,7 +15,7 @@ class LightTableApp:
         self.root = root
         self.root.title("ライトボード")
         self.root.resizable(False, False)
-        self.ui = LightTableUI(self)  # Tạo một instance của lớp UI
+        self.ui = LightTableUI(self) 
         self.images = []
         self.always_on_top = False
         self.click_through = False
@@ -46,7 +46,19 @@ class LightTableApp:
         keyboard.add_hotkey('ctrl+q', self.toggle_clickthrough)
         keyboard.add_hotkey('ctrl+e', self.toggle_always_on_top)
         keyboard.add_hotkey('ctrl+o', self.toggle_light_table)
+        keyboard.add_hotkey('ctrl+f', self.toggle_visibility)  
 
+    def toggle_visibility(self):
+        """Ẩn/hiện ảnh đã chọn."""
+        for img_obj in self.images:
+            if img_obj.is_selected:
+                img_obj.is_visible = not img_obj.is_visible  
+                if self.canvas:
+
+                    if img_obj.is_visible:
+                        self.canvas.itemconfig(img_obj.canvas_image_id, state='normal')
+                    else:
+                        self.canvas.itemconfig(img_obj.canvas_image_id, state='hidden')
     def toggle_light_table(self):
         if self.light_table_opened:
             self.close_light_table()
@@ -161,7 +173,7 @@ class LightTableApp:
                 self.ui.image_list.selection_remove(item_id)
 
     def on_image_selected_from_card(self, index, event=None):
-        if event and event.state & 0x4:  # Check for Ctrl key
+        if event and event.state & 0x4:  
             self.images[index].is_selected = not self.images[index].is_selected
         else:
             for i, img_obj in enumerate(self.images):
@@ -182,7 +194,7 @@ class LightTableApp:
     def delete_selected_image(self):
         images_to_delete = [img_obj for img_obj in self.images if img_obj.is_selected]
         if not images_to_delete:
-            messagebox.showinfo("Notification","Không có ảnh nào được chọn.")
+            messagebox.showinfo("Thông báo","Không có ảnh nào được chọn.")
             return
         for img_obj in reversed(images_to_delete):
             if self.light_table_opened and self.canvas and img_obj.canvas_image_id:
@@ -199,21 +211,26 @@ class LightTableApp:
             window_height = self.light_table_window.winfo_height()
 
             for img_obj in self.images:
-                final_image = img_obj.get_transformed_image(window_width, window_height)
-                img_obj.photoimage = ImageTk.PhotoImage(image=final_image)
+                if img_obj.is_visible: 
+                    final_image = img_obj.get_transformed_image(window_width, window_height)
+                    img_obj.photoimage = ImageTk.PhotoImage(image=final_image)
 
-                x = img_obj.x + window_width / 2
-                y = img_obj.y + window_height / 2
+                    x = img_obj.x + window_width / 2
+                    y = img_obj.y + window_height / 2
 
-                if img_obj.canvas_image_id is None:
-                    img_obj.canvas_image_id = self.canvas.create_image(
-                        x, y, anchor="center", image=img_obj.photoimage, tags="image"
-                    )
-                else:
-                    self.canvas.coords(img_obj.canvas_image_id, x, y)
-                    self.canvas.itemconfig(img_obj.canvas_image_id, image=img_obj.photoimage)
+                    if img_obj.canvas_image_id is None:
+                        img_obj.canvas_image_id = self.canvas.create_image(
+                            x, y, anchor="center", image=img_obj.photoimage, tags="image"
+                        )
+                    else:
+                        self.canvas.coords(img_obj.canvas_image_id, x, y)
+                        self.canvas.itemconfig(img_obj.canvas_image_id, image=img_obj.photoimage)
 
-                self.canvas.tag_lower(img_obj.canvas_image_id)
+                    self.canvas.tag_lower(img_obj.canvas_image_id)
+                else: 
+                    if img_obj.canvas_image_id is not None:
+                        self.canvas.delete(img_obj.canvas_image_id)
+                        img_obj.canvas_image_id = None
 
     def update_opacity(self, value=None):
         if self.light_table_window and self.light_table_window.winfo_exists():
@@ -237,13 +254,13 @@ class LightTableApp:
     def apply_clickthrough(self):
         if self.light_table_window and self.light_table_window.winfo_exists() and platform.system() == "Windows":
             hwnd = ctypes.windll.user32.GetParent(self.light_table_window.winfo_id())
-            style = ctypes.windll.user32.GetWindowLongW(hwnd, -20)  # GWL_EXSTYLE
+            style = ctypes.windll.user32.GetWindowLongW(hwnd, -20)  
             if self.click_through:
-                style |= 0x00080000  # WS_EX_LAYERED
-                style |= 0x00000020  # WS_EX_TRANSPARENT
+                style |= 0x00080000  
+                style |= 0x00000020 
             else:
-                style &= ~0x00000020  # Remove WS_EX_TRANSPARENT
-            ctypes.windll.user32.SetWindowLongW(hwnd, -20, style)  # GWL_EXSTYLE
+                style &= ~0x00000020  
+            ctypes.windll.user32.SetWindowLongW(hwnd, -20, style)  
 
     def toggle_clickthrough(self):
         self.click_through = not self.click_through
@@ -255,7 +272,7 @@ class LightTableApp:
         for i, img_obj in enumerate(self.images):
             if img_obj.is_selected:
                 img_obj.photo = ImageOps.mirror(img_obj.photo)
-                img_obj.cached_image = None # Reset cached image
+                img_obj.cached_image = None 
         self.resize_image()
 
     def rotate_image(self, value):
@@ -272,7 +289,7 @@ class LightTableApp:
                     img_obj.scale_factor *= 1.2
                 else:
                     img_obj.scale_factor /= 1.2
-                img_obj.cached_image = None  # Invalidate cache
+                img_obj.cached_image = None 
       self.resize_image()
 
     def on_drag_start(self, event):
@@ -333,7 +350,7 @@ class LightTableApp:
 
     def on_drag_release(self, event):
         if self.dragging and self.dragged_image_index is not None:
-            self.on_image_selected_from_card(self.dragged_image_index, event)  # Pass the event
+            self.on_image_selected_from_card(self.dragged_image_index, event) 
         self.dragging = False
         self.dragged_image = None
         self.dragged_image_index = None
@@ -370,13 +387,13 @@ class LightTableApp:
 
                 cleaned_images = []
                 for img_obj in self.images:
-                    # Only store necessary data, not the entire image object
                     cleaned_obj = ImageObject(img_obj.image_path)
                     cleaned_obj.scale_factor = img_obj.scale_factor
                     cleaned_obj.angle = img_obj.angle
                     cleaned_obj.x = img_obj.x
                     cleaned_obj.y = img_obj.y
                     cleaned_obj.is_selected = img_obj.is_selected  # Save selection state
+                    cleaned_obj.is_visible = img_obj.is_visible # Lưu trạng thái is_visible
                     cleaned_images.append(cleaned_obj)
 
                 self.saved_state['images'] = cleaned_images
@@ -396,7 +413,6 @@ class LightTableApp:
                 with open(filepath, "rb") as f:
                     loaded_state = pickle.load(f)
 
-                # Restore images and their properties
                 self.images = loaded_state['images']
 
                 for img_obj in self.images:
@@ -404,19 +420,19 @@ class LightTableApp:
                     if img_obj.original_image.mode != 'RGBA':
                         img_obj.original_image = img_obj.original_image.convert('RGBA')
                     img_obj.photo = img_obj.original_image.copy()
-                    img_obj.cached_image = None  # Clear cached images
+                    img_obj.cached_image = None  
                     img_obj.cached_size = None
                     img_obj.cached_angle = None
 
-                self.update_image_list()  # Update the image list after loading
 
-                # Restore other settings
+                self.update_image_list()  
+          
                 self.always_on_top = loaded_state.get('always_on_top', False)
                 self.click_through = loaded_state.get('click_through', False)
                 self.ui.switch_ontop.select() if self.always_on_top else self.ui.switch_ontop.deselect()
                 self.ui.switch_clickthrough.select() if self.click_through else self.ui.switch_clickthrough.deselect()
 
-                # Open light table if not already open
+           
                 if not self.light_table_opened:
                     self.open_light_table()
 
@@ -426,9 +442,10 @@ class LightTableApp:
 
                 self.apply_always_on_top()
                 self.apply_clickthrough()
-
                 self.resize_image()
                 self.update_opacity()
+
+
                 print(f"State loaded from {filepath}")
 
             except EOFError:
@@ -439,5 +456,4 @@ class LightTableApp:
                 print(f"Error loading state: {e}")
                 messagebox.showerror("Error", f"Error loading state: {e}")
             finally:
-                # Any cleanup can go here
                 pass
