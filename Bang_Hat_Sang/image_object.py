@@ -30,7 +30,7 @@ class ImageObject:
             self.cached_angle == self.angle):
             return self.cached_image
 
-        resized_image = self.photo.resize(new_size, Image.LANCZOS)
+        resized_image = self.photo.resize(new_size, Image.NEAREST)
         rotated_image = resized_image.rotate(-self.angle, expand=True)
 
         transparent_background = Image.new('RGBA', (rotated_image.width, rotated_image.height), (0, 0, 0, 0))
